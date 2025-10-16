@@ -643,21 +643,60 @@ def candidates_for_queries(
 # ==================== Streamlit UI ====================
 
 st.caption("Buscador semántico que sugiere equivalencias del Diccionario de la EDT ARPRO para estandarizar proyectos.")
-
+# --- SIDEBAR ---------------------------------------------------------------
 with st.sidebar:
-    st.header("diccionario base")
-    cat_file = st.file_uploader("Sube el Diccionario maestro de la EDT (Excel o Parquet)", type=["csv", "parquet"])
-    default_text_col = st.text_input("Columna de texto (diccionario)", value="Descripción_prefijada")
-    default_code_col = st.text_input("Columna de código (diccionario)", value="Código")
-    keep_cols_inp = st.text_input("Otras columnas a mostrar (coma)", value="Unidad,Categoría")
-    keep_cols = [c.strip() for c in keep_cols_inp.split(",") if c.strip()]
-    model = st.text_input("Modelo de IA para vectores (embeddings)", value="text-embedding-3-small")
-    k = st.number_input("Candidatos a comparar (máx. 5)", min_value=1, max_value=20, value=5, step=1)
-    use_default_catalog = st.toggle("Usar Diccionario maestro de la EDT incluido (ejemplo de prueba)", value=True)
+    # 👇 Main control on top
+    k = st.number_input(
+        "Candidatos a comparar (máx. 5)",
+        min_value=1, max_value=20, value=5, step=1
+    )
 
     st.markdown("---")
-    st.caption("Este módulo usa inteligencia artificial para calcular similitud semántica. Los datos de referencia provienen del Diccionario maestro de la EDT ARPRO.")
 
+    # 🧠 Toggle for built-in vs. custom dictionary
+    use_default_catalog = st.toggle(
+        "Usar Diccionario maestro de la EDT incluido (ejemplo de prueba)",
+        value=True
+    )
+
+    # Collapsible section only opens if toggle is OFF
+    with st.expander("Cambiar diccionario base (opcional)", expanded=not use_default_catalog):
+        cat_file = st.file_uploader(
+            "Cambia el Diccionario maestro de la EDT (CSV o Parquet)",
+            type=["csv", "parquet"],
+            disabled=use_default_catalog,
+            help="Sube un diccionario con columnas de código y descripción."
+        )
+        default_text_col = st.text_input(
+            "Columna de texto (diccionario)",
+            value="Descripción_prefijada",
+            disabled=use_default_catalog
+        )
+        default_code_col = st.text_input(
+            "Columna de código (diccionario)",
+            value="Código",
+            disabled=use_default_catalog
+        )
+        keep_cols_inp = st.text_input(
+            "Otras columnas a mostrar (coma)",
+            value="Unidad,Categoría",
+            disabled=use_default_catalog
+        )
+        model = st.text_input(
+            "Modelo de IA para vectores (embeddings)",
+            value="text-embedding-3-small",
+            disabled=use_default_catalog
+        )
+
+    st.markdown("---")
+    with st.expander("ℹ️ Acerca de la herramienta", expanded=False):
+        st.markdown(
+            "Esta herramienta usa IA para calcular **similitud semántica (coseno)** y sugerir equivalencias "
+            "en la **EDT ARPRO**. Un puntaje más alto indica mayor similitud."
+        )
+
+# Parse list of columns after sidebar
+keep_cols = [c.strip() for c in (keep_cols_inp or '').split(',') if c.strip()]
 
 # Load catalog
 
@@ -675,7 +714,7 @@ if cat_df is None:
         else:
             st.info("Sube un diccionario o activa 'Usar diccionario incluido'.")
     except Exception as e:
-        st.error(f"No se pudo leer el diccionario: {e}")
+        st.error(f"No se encontró el diccionario cargado automáticamente. Contacta al administrador. {e}")
         cat_df = None
 
         
