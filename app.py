@@ -81,7 +81,7 @@ USERNAMES = [u.strip() for u in (get_secret("USERNAMES","") or "").split(",") if
 PASSWORDS = [p.strip() for p in (get_secret("PASSWORDS","") or "").split(",") if p.strip()]
 
 
-st.set_page_config(page_title="Homologador de Estructura de desglose de Trabajo: Códigos y Nombres", page_icon="🧭", layout="wide")
+st.set_page_config(page_title="Homologador de Estructura de desglose de Trabajo (EDT): Códigos y Nombres", page_icon="🧭", layout="wide")
 
 # --- Logo institucional --
 
@@ -246,7 +246,7 @@ if not password:
 
 try:
     cat_df = load_encrypted_parquet("data/base_insumos_2.parquet.enc", password)
-    st.caption(f"diccionario cargado desde data/base_insumos_2.parquet.enc ({len(cat_df):,} filas).")
+    st.caption(f"Diccionario maestro de la EDT cargado ({len(cat_df):,} filas).")
 except Exception as e:
     st.error(f"No se pudo descifrar/leer el diccionario .enc: {e}")
     st.stop()
