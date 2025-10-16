@@ -83,6 +83,18 @@ PASSWORDS = [p.strip() for p in (get_secret("PASSWORDS","") or "").split(",") if
 
 st.set_page_config(page_title="Homologador de Estructura de desglose de Trabajo: Códigos y Nombres", page_icon="🧭", layout="wide")
 
+st.markdown(
+    """
+    <style>
+      @media (max-width: 768px){
+        /* Bring the sidebar into view on small screens */
+        [data-testid="stSidebar"]{ transform: translateX(0%) !important; }
+      }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # --- Logo institucional --
 
 logo_path = "Logotipo-ESCUELA-sin-VM.width-380_R7iE0XU.png"
@@ -144,10 +156,15 @@ def guarded_login():
         else:
             st.error("Credenciales inválidas")
             st.stop()
+
     st.markdown(
         """
         <script>
-            window.parent.document.querySelector('button[data-testid=stSidebarButton]').click();
+        (function tryOpenSidebar(attempts=0){
+            const btn = window.parent.document.querySelector('button[data-testid=stSidebarButton],button[data-testid=stSidebarCollapseButton]');
+            if (btn) { btn.click(); return; }
+            if (attempts < 20) setTimeout(()=>tryOpenSidebar(attempts+1), 150);
+        })();
         </script>
         """,
         unsafe_allow_html=True,
@@ -156,7 +173,8 @@ def guarded_login():
     st.markdown(
         """
         <div style="text-align:center; font-size:16px;">
-            <a href="#" onclick="window.parent.document.querySelector('button[data-testid=stSidebarButton]').click(); return false;" style="text-decoration:none; color:inherit;">
+            <a href="#" onclick="(function openSB(a=0){const b=window.parent.document.querySelector('button[data-testid=stSidebarButton],button[data-testid=stSidebarCollapseButton]'); if(b){b.click();} else if(a<20){setTimeout(()=>openSB(a+1),150);} return false;})()"
+            style="text-decoration:none; color:inherit;">
                 🔒 Por favor, inicie sesión para continuar.
             </a>
         </div>
