@@ -142,7 +142,7 @@ def guarded_login():
 
 
         else:
-            st.error("Credenciales inválidas")
+            st.error("Usuario o contraseña incorrectos")
             st.stop()
     st.markdown(
         """
@@ -187,9 +187,7 @@ st.write("✅ Has ingresado.")
 
 # use your OpenAI key safely
 openai_key = os.getenv("OPENAI_API_KEY")
-if openai_key:
-    st.caption("OPENAI_API_KEY loaded from env (hidden).")
-else:
+if not openai_key:
     st.warning("No OPENAI_API_KEY found in env.")
 
 # ==================== Utilities ====================
