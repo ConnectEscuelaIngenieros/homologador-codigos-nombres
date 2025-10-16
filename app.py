@@ -156,9 +156,20 @@ def guarded_login():
     st.markdown(
         """
         <div style="text-align:center; font-size:16px;">
-            <a href="#" onclick="window.parent.document.querySelector('button[data-testid=stSidebarButton]').click(); return false;" style="text-decoration:none; color:inherit;">
-                🔒 Por favor, inicie sesión para continuar.
-            </a>
+        <a href="#" 
+            onclick="
+            (function openSidebar(retry=0){
+                const btn = window.parent.document.querySelector(
+                'button[data-testid=stSidebarButton],button[data-testid=stSidebarCollapseButton]'
+                );
+                if(btn){ btn.click(); }
+                else if(retry < 30){ setTimeout(()=>openSidebar(retry+1),200); }
+            })();
+            return false;
+            "
+            style="text-decoration:none; color:inherit;">
+            🔒 Por favor, inicie sesión para continuar.
+        </a>
         </div>
         """,
         unsafe_allow_html=True,
