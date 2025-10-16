@@ -81,7 +81,7 @@ USERNAMES = [u.strip() for u in (get_secret("USERNAMES","") or "").split(",") if
 PASSWORDS = [p.strip() for p in (get_secret("PASSWORDS","") or "").split(",") if p.strip()]
 
 
-st.set_page_config(page_title="Homologador de Estructura de desglose de Trabajo (EDT): Códigos y Nombres", page_icon="🧭", layout="wide")
+st.set_page_config(page_title="Asistente de Homologación de Estructura de desglose de Trabajo (EDT): Códigos y Nombres", page_icon="🧭", layout="wide")
 
 # --- Logo institucional --
 
@@ -642,7 +642,7 @@ def candidates_for_queries(
 
 # ==================== Streamlit UI ====================
 
-st.caption("Buscador semántico que sugiere equivalencias del Diccionario de la EDT ARPRO para estandarizar proyectos.")
+st.caption("El asistente de homologación sugiere al usuario equivalencias del Diccionario de la EDT ARPRO para estandarizar proyectos.")
 # --- SIDEBAR ---------------------------------------------------------------
 with st.sidebar:
     # 👇 Main control on top
