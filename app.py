@@ -144,8 +144,26 @@ def guarded_login():
         else:
             st.error("Credenciales inválidas")
             st.stop()
+    st.markdown(
+        """
+        <script>
+            window.parent.document.querySelector('button[data-testid=stSidebarButton]').click();
+        </script>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    st.info("Please log in to continue.")
+    st.markdown(
+        """
+        <div style="text-align:center; font-size:16px;">
+            <a href="#" onclick="window.parent.document.querySelector('button[data-testid=stSidebarButton]').click(); return false;" style="text-decoration:none; color:inherit;">
+                🔒 Por favor, inicie sesión para continuar.
+            </a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     st.stop()
 
 # ---- Call login guard before showing app ----
