@@ -827,14 +827,19 @@ with tab2:
                     st.success("Candidatos por grupo generados.")
                     st.dataframe(res, use_container_width=True)
 
-                    # Descargar como CSV (opcional, para compatibilidad)
-                    csv_bytes = res.to_csv(index=False).encode("utf-8")
+                    # Descargar como Excel (XLSX)
+                    excel_buffer = BytesIO()
+                    res.to_excel(excel_buffer, index=False)
+                    excel_buffer.seek(0)
+
                     st.download_button(
                         "Descargar archivo Excel (.xlsx)",
                         data=excel_buffer,
                         file_name="candidatos_grupo.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
+                    # Descargar como CSV (opcional, para compatibilidad)
+                    csv_bytes = res.to_csv(index=False).encode("utf-8")
                     st.download_button(
                         "Descargar CSV",
                         data=csv_bytes,
@@ -842,12 +847,7 @@ with tab2:
                         mime="text/csv"
                     )
 
-                    # Descargar como Excel (XLSX)
-                    excel_buffer = BytesIO()
-                    res.to_excel(excel_buffer, index=False)
-                    excel_buffer.seek(0)
 
-                    
 
             except Exception as e:
                 st.error(f"Error al procesar el grupo: {e}")
