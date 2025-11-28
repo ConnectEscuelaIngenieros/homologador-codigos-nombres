@@ -830,6 +830,12 @@ with tab2:
                     # Descargar como CSV (opcional, para compatibilidad)
                     csv_bytes = res.to_csv(index=False).encode("utf-8")
                     st.download_button(
+                        "Descargar archivo Excel (.xlsx)",
+                        data=excel_buffer,
+                        file_name="candidatos_grupo.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+                    st.download_button(
                         "Descargar CSV",
                         data=csv_bytes,
                         file_name="candidatos_grupo.csv",
@@ -841,12 +847,7 @@ with tab2:
                     res.to_excel(excel_buffer, index=False)
                     excel_buffer.seek(0)
 
-                    st.download_button(
-                        "Descargar XLSX",
-                        data=excel_buffer,
-                        file_name="candidatos_grupo.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
+                    
 
             except Exception as e:
                 st.error(f"Error al procesar el grupo: {e}")
