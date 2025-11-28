@@ -29,6 +29,7 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 from pathlib import Path
+from io import BytesIO   # ← add this one
 
 
 # encrypt
