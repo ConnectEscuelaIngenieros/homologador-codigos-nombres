@@ -788,7 +788,7 @@ with tab1:
 
 with tab2:
     st.subheader("2) Homologar un grupo desde Excel")
-    st.write("Sube un archivo Excel (.xlsx  o .csv) con una columna de texto (por ejemplo, 'Descripción'). Se calcularán candidatos para cada fila.")
+    st.write("Sube un archivo Excel (.xlsx  o .csv) con una columna de texto (por ejemplo, 'descripcion'). Se calcularán candidatos para cada fila.")
     batch_file = st.file_uploader(
         "Archivo con items a homologar",
         type=["xlsx", "xls", "csv"],
@@ -826,8 +826,28 @@ with tab2:
                     res.insert(0, "row_id", np.repeat(np.arange(len(queries)), k))
                     st.success("Candidatos por grupo generados.")
                     st.dataframe(res, use_container_width=True)
-                    csv = res.to_csv(index=False).encode("utf-8")
-                    st.download_button("Descargar CSV", data=csv, file_name="candidatos_grupo.csv", mime="text/csv")
+
+                    # Descargar como CSV (opcional, para compatibilidad)
+                    csv_bytes = res.to_csv(index=False).encode("utf-8")
+                    st.download_button(
+                        "Descargar CSV",
+                        data=csv_bytes,
+                        file_name="candidatos_grupo.csv",
+                        mime="text/csv"
+                    )
+
+                    # Descargar como Excel (XLSX)
+                    excel_buffer = BytesIO()
+                    res.to_excel(excel_buffer, index=False)
+                    excel_buffer.seek(0)
+
+                    st.download_button(
+                        "Descargar XLSX",
+                        data=excel_buffer,
+                        file_name="candidatos_grupo.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+
             except Exception as e:
                 st.error(f"Error al procesar el grupo: {e}")
 
