@@ -787,8 +787,8 @@ with tab1:
                 st.error(f"Error al generar candidatos: {e}")
 
 with tab2:
-    st.subheader("2) Homologar un grupo desde Excel o CSV")
-    st.write("Sube un archivo Excel (.xlsx) o CSV con una columna de texto (por ejemplo, 'Descripción'). Se calcularán candidatos para cada fila.")
+    st.subheader("2) Homologar un grupo desde Excel")
+    st.write("Sube un archivo Excel (.xlsx  o .csv) con una columna de texto (por ejemplo, 'Descripción'). Se calcularán candidatos para cada fila.")
     batch_file = st.file_uploader(
         "Archivo con items a homologar",
         type=["xlsx", "xls", "csv"],
