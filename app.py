@@ -182,7 +182,7 @@ if not guarded_login():
     st.stop()
 
 # ---- Private content of your app ----
-st.title("Homologador de Estructura de desglose de Trabajo: Códigos y Nombres")
+st.title("Asistente de Homologación de Estructura de desglose de Trabajo: Códigos y Nombres")
 st.write("✅ Has ingresado.")
 
 # use your OpenAI key safely
@@ -297,51 +297,75 @@ def get_openai_client() -> Optional[OpenAI]:
 
 
 def read_table(path_or_buf, sheet: Optional[str] = None) -> pd.DataFrame:
-    """Read a CSV or Parquet file into a DataFrame.
+    """Read a CSV, Parquet, or Excel file into a DataFrame.
 
     Parameters
     ----------
     path_or_buf : str or buffer
         Path to the file or file-like buffer.
     sheet : str, optional
-        Unused for CSV/Parquet. Present for future Excel support.
+        Excel sheet name or index (if using Excel). If None, uses first sheet.
 
     Returns
     -------
     pandas.DataFrame
     """
+    # Case 1: buffer from st.file_uploader
     if hasattr(path_or_buf, "read"):
-        # It's a buffer from st.file_uploader
         name = getattr(path_or_buf, "name", "uploaded")
-        if name.lower().endswith(".parquet"):
+        name_lower = name.lower()
+
+        # Excel
+        if name_lower.endswith((".xlsx", ".xls")):
+            print(f"[DEBUG] Reading Excel buffer: {name}")
+            return pd.read_excel(path_or_buf, sheet_name=sheet or 0)
+
+        # Parquet
+        if name_lower.endswith(".parquet"):
+            print(f"[DEBUG] Reading Parquet buffer: {name}")
             return pd.read_parquet(path_or_buf)
-        else:
-            # Auto-separator attempts
+
+        # CSV-like (try several separators)
+        print(f"[DEBUG] Reading CSV-like buffer: {name}")
+        try:
+            return pd.read_csv(path_or_buf)
+        except Exception:
+            path_or_buf.seek(0)
+            for sep in [";", "|", "\t"]:
+                try:
+                    print(f"[DEBUG] Retrying CSV buffer with sep='{sep}'")
+                    return pd.read_csv(path_or_buf, sep=sep)
+                except Exception:
+                    path_or_buf.seek(0)
+            raise
+
+    # Case 2: path string
+    p = str(path_or_buf)
+    p_lower = p.lower()
+
+    # Excel
+    if p_lower.endswith((".xlsx", ".xls")):
+        print(f"[DEBUG] Reading Excel file: {p}")
+        return pd.read_excel(p, sheet_name=sheet or 0)
+
+    # Parquet
+    if p_lower.endswith(".parquet"):
+        print(f"[DEBUG] Reading Parquet file: {p}")
+        return pd.read_parquet(p)
+
+    # CSV-like
+    print(f"[DEBUG] Reading CSV-like file: {p}")
+    try:
+        return pd.read_csv(p)
+    except Exception:
+        for sep in [";", "|", "\t"]:
             try:
-                return pd.read_csv(path_or_buf)
+                print(f"[DEBUG] Retrying CSV file with sep='{sep}'")
+                return pd.read_csv(p, sep=sep)
             except Exception:
-                path_or_buf.seek(0)
-                for sep in [";", "|", "\t"]:
-                    try:
-                        return pd.read_csv(path_or_buf, sep=sep)
-                    except Exception:
-                        path_or_buf.seek(0)
-                raise
-    else:
-        # It's a path
-        p = str(path_or_buf)
-        if p.lower().endswith(".parquet"):
-            return pd.read_parquet(p)
-        else:
-            try:
-                return pd.read_csv(p)
-            except Exception:
-                for sep in [";", "|", "\t"]:
-                    try:
-                        return pd.read_csv(p, sep=sep)
-                    except Exception:
-                        continue
-                raise
+                continue
+        raise
+
 
 @st.cache_data(show_spinner=False)
 def load_default_catalog(path: str) -> pd.DataFrame:
